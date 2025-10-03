@@ -9,7 +9,12 @@ mkdir temp-frontend || echo OK
 
 rm -rf temp-frontend/*
 
-cp -r ../caprover-frontend/* ./temp-frontend
+# Clone custom frontend into temp-frontend (override via FRONTEND_REPO and FRONTEND_REF)
+FRONTEND_REPO="${FRONTEND_REPO:-https://github.com/tbotteam/caprover-frontend.git}"
+git clone "$FRONTEND_REPO" ./temp-frontend
+if [ -n "$FRONTEND_REF" ]; then
+    git -C ./temp-frontend checkout "$FRONTEND_REF"
+fi
 
 rm -rf ./temp-frontend/node_modules
 rm -rf ./temp-frontend/.git

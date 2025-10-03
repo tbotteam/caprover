@@ -44,23 +44,26 @@ echo $IMAGE_NAME:$CAPROVER_VERSION
 echo "**************************************"
 echo "**************************************"
 
-FRONTEND_COMMIT_HASH=c816df013277d5fc857157adbcf6529108a55f9f
+FRONTEND_REPO=${FRONTEND_REPO:-https://github.com/tbotteam/caprover-frontend.git}
+FRONTEND_REF=${FRONTEND_REF:-}
 
 ## Building frontend app
 ORIG_DIR=$(pwd)
 FRONTEND_DIR=/home/runner/app-frontend
 curl -Iv https://registry.yarnpkg.com/
 mkdir -p $FRONTEND_DIR && cd $FRONTEND_DIR
-git clone https://github.com/githubsaturn/caprover-frontend.git
-cd caprover-frontend
-git reset --hard $FRONTEND_COMMIT_HASH
+git clone "$FRONTEND_REPO" frontend
+cd frontend
+if [ -n "$FRONTEND_REF" ]; then
+    git reset --hard "$FRONTEND_REF"
+fi
 git log --max-count=1
 yarn install --no-cache --frozen-lockfile --network-timeout 600000
 echo "Installation finished"
 yarn run build
 echo "Building finished"
 cd $ORIG_DIR
-mv $FRONTEND_DIR/caprover-frontend/build ./dist-frontend
+mv $FRONTEND_DIR/frontend/build ./dist-frontend
 
 sudo apt-get update && sudo apt-get install qemu-user-static
 # docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
