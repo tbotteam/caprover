@@ -13,7 +13,7 @@ import CaptainConstants from '../../../utils/CaptainConstants'
 import Logger from '../../../utils/Logger'
 
 const router = express.Router()
-const DEFAULT_ONE_CLICK_BASE_URL = 'https://oneclickapps.caprover.com'
+const DEFAULT_ONE_CLICK_BASE_URL = 'https://tbotteam.github.io/one-click-apps'
 
 const VERSION = `v4`
 
