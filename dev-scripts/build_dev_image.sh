@@ -18,7 +18,7 @@ rm -rf ./temp-frontend/.git
 pwd
 
 # If TARGET_IMAGE is set, build and PUSH a multi-arch image using buildx.
-# Otherwise, do a simple local dev build (single-arch) to caprover-dev-image:0.0.1
+# Otherwise, do a simple local dev build (single-arch) to caprover-uncoded:latest
 if [ -n "$TARGET_IMAGE" ]; then
     PLATFORMS="${PLATFORMS:-linux/amd64,linux/arm64}"
     docker run --rm --privileged tonistiigi/binfmt --install all || true
@@ -28,5 +28,5 @@ if [ -n "$TARGET_IMAGE" ]; then
         -t "$TARGET_IMAGE" \
         -f dockerfile-captain.dev --push .
 else
-    docker build --no-cache -f dockerfile-captain.dev -t caprover-dev-image:0.0.2 .
+    docker build --no-cache -f dockerfile-captain.dev -t caprover-uncoded:latest .
 fi

@@ -15,7 +15,7 @@ const CONSTANT_FILE_OVERRIDE_USER =
     CAPTAIN_DATA_DIRECTORY + '/config-override.json'
 
 const configs = {
-    publishedNameOnDockerHub: 'syedarsalanhabib/caprover-dev-image',
+    publishedNameOnDockerHub: 'syedarsalanhabib/caprover-uncoded',
 
     version: 'latest',
 
