@@ -17,16 +17,27 @@ rm -rf ./temp-frontend/.git
 
 pwd
 
-# If TARGET_IMAGE is set, build and PUSH a multi-arch image using buildx.
-# Otherwise, do a simple local dev build (single-arch) to caprover-uncoded:latest
-if [ -n "$TARGET_IMAGE" ]; then
-    PLATFORMS="${PLATFORMS:-linux/amd64,linux/arm64}"
-    docker run --rm --privileged tonistiigi/binfmt --install all || true
-    docker buildx create --name caproverbuilder >/dev/null 2>&1 || true
-    docker buildx use caproverbuilder
-    docker buildx build --platform "$PLATFORMS" \
-        -t "$TARGET_IMAGE" \
-        -f dockerfile-captain.dev --push .
-else
-    docker build --no-cache -f dockerfile-captain.dev -t caprover-uncoded:latest .
+# Always build and push a multi-arch image using Docker Buildx.
+if [ -z "$TARGET_IMAGE" ]; then
+    CAPTAIN_CONSTANTS_FILE="./src/utils/CaptainConstants.ts"
+    if [ -f "$CAPTAIN_CONSTANTS_FILE" ]; then
+        PUBLISHED_NAME=$(sed -n "s/^[[:space:]]*publishedNameOnDockerHub:[[:space:]]*'\([^']*\)'.*/\1/p" "$CAPTAIN_CONSTANTS_FILE" | head -n1)
+        VERSION_TAG=$(sed -n "s/^[[:space:]]*version:[[:space:]]*'\([^']*\)'.*/\1/p" "$CAPTAIN_CONSTANTS_FILE" | head -n1)
+        if [ -n "$PUBLISHED_NAME" ] && [ -n "$VERSION_TAG" ]; then
+            TARGET_IMAGE="${PUBLISHED_NAME}:${VERSION_TAG}"
+            echo "Resolved TARGET_IMAGE from CaptainConstants.ts: $TARGET_IMAGE"
+        fi
+    fi
+    if [ -z "$TARGET_IMAGE" ]; then
+        echo "ERROR: TARGET_IMAGE is required, e.g. export TARGET_IMAGE=youruser/caprover:custom (or set publishedNameOnDockerHub/version in CaptainConstants.ts)" >&2
+        exit 1
+    fi
 fi
+
+PLATFORMS="${PLATFORMS:-linux/amd64,linux/arm64}"
+docker run --rm --privileged tonistiigi/binfmt --install all || true
+docker buildx create --name caproverbuilder >/dev/null 2>&1 || true
+docker buildx use caproverbuilder
+docker buildx build --platform "$PLATFORMS" \
+    -t "$TARGET_IMAGE" \
+    -f dockerfile-captain.dev --push .
