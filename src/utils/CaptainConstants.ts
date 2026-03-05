@@ -17,7 +17,7 @@ const CONSTANT_FILE_OVERRIDE_USER =
 const configs = {
     publishedNameOnDockerHub: 'tbotteam/caprover-full',
 
-    version: 'latest',
+    version: '1.14.1',
 
     defaultMaxLogSize: '512m',
 
